@@ -86,7 +86,7 @@ public class MemoryData implements Runnable {
 		} finally {
 			lobjMemClass = null;
 		}
-		LOGGER.info("**************************************");
+		LOGGER.info(GlobalObjects.gstrSTAR);
 	}
 
 	/**

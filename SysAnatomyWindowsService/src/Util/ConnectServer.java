@@ -11,6 +11,11 @@ import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
 import WindowsService.MemoryData;
 
+/**
+ * 
+ * @author Saranya
+ *
+ */
 public class ConnectServer implements Runnable {
 	private static final Logger LOGGER = LogManager.getLogger(MemoryData.class.getName());
 
@@ -19,10 +24,8 @@ public class ConnectServer implements Runnable {
 	}
 
 	public void sendJsonToServer(JSONObject pobjJsonToSend) {
-		// TODO Auto-generated method stub
 		try {
-			
-			// Now pass JSON File Data to REST Service
+			// Pass JSON File Data to REST Service
 			try {
 				LOGGER.info("Inside sendJsonToServer");
 				URL url = new URL("http://localhost:8080/SysAnatomyWebService/api/crunchifyService");
