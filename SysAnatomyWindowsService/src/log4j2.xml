@@ -7,7 +7,7 @@
 		<Console name="Console" target="SYSTEM_OUT">
 			<PatternLayout pattern="${PATTERN}" />
 		</Console>
-		<RollingFile name="RollingFile" filename="Logs/SysAnatomy.log"
+		<RollingFile name="RollingFile" filename="Logs/SysAnatomyWindowService.log"
 			filepattern="Logs/archive/example1.log.%d{yyyy-MM-dd-hh-mm}.gz">
 			<PatternLayout pattern="${PATTERN}" />
 			<Policies>

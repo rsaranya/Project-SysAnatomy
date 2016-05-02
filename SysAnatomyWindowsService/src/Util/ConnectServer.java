@@ -9,16 +9,14 @@ import java.net.URLConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
-import WindowsService.MemoryData;
-
 /**
  * Connects to the server sends JSON objects
+ * 
  * @author Saranya
  *
  */
 public class ConnectServer implements Runnable {
-	private static final Logger LOGGER = LogManager
-	    .getLogger(MemoryData.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger();
 	
 	/**
 	 * 
@@ -44,7 +42,7 @@ public class ConnectServer implements Runnable {
 				// URL of the Web Service
 				URL lurlSysAnatomy = new URL(
 				    "http://localhost:8080/SysAnatomyWebService/api/WebService");
-				//Properties for the Json object
+				// Properties for the Json object
 				URLConnection lurlconSysAnatomy = lurlSysAnatomy.openConnection();
 				lurlconSysAnatomy.setDoOutput(true);
 				lurlconSysAnatomy.setRequestProperty("Content-Type",
@@ -78,12 +76,16 @@ public class ConnectServer implements Runnable {
 	 * 
 	 */
 	public void run() {
-		synchronized (GlobalObjects.larrlstJson) {
-			while (true) {
-				if (!GlobalObjects.larrlstJson.isEmpty()) {
-					sendJsonToServer(GlobalObjects.larrlstJson.remove(0));
+		try {
+			synchronized (GlobalObjects.larrlstJson) {
+				while (true) {
+					if (!GlobalObjects.larrlstJson.isEmpty()) {
+						sendJsonToServer(GlobalObjects.larrlstJson.remove(0));
+					}
 				}
 			}
+		} catch (Exception ex) {
+			LOGGER.error("Exception in run : " + ex.getMessage());
 		}
 	}
 }
