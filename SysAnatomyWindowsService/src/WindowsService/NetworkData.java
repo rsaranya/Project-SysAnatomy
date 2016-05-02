@@ -15,43 +15,51 @@ import org.json.simple.JSONObject;
 import Util.GlobalObjects;
 
 public class NetworkData implements Runnable {
-
+	
 	private static Sigar sigar = new Sigar();
 	private final Logger LOGGER = LogManager.getLogger();
 	private JSONObject lobjJsonFileSystemData = new JSONObject();
-
+	private boolean IsJsonObjectSent = false;
+	
 	/**
-	 * Constructor of the class
-	 * Spawns a thread which fetches data from the user system.
+	 * Constructor of the class Spawns a thread which fetches data from the user
+	 * system.
 	 */
 	public NetworkData() {
-		new Thread(this).start();
+		try {
+			new Thread(this).start();
+		} catch (Exception ex) {
+			LOGGER.error("Exception in NetworkData : " + ex.getMessage());
+		}
 	}
-
+	
 	/**
-	 * Called when thread starts Calls the functions 
-	 * to fetch Network related data 
+	 * Called when thread starts Calls the functions to fetch Network related data
 	 * And adds the JSON object into a global array
 	 */
 	@Override
 	public void run() {
-		getNetworkData();
-		getNetworkInterfaceList();
-		getNetConnections();
-		getNetRoute();
-		synchronized (GlobalObjects.larrlstJson) {
-			if (lobjJsonFileSystemData != null) {
-				GlobalObjects.larrlstJson.add(lobjJsonFileSystemData);
+		try {
+			getNetworkData();
+			getNetworkInterfaceList();
+			getNetConnections();
+			getNetRoute();
+			synchronized (GlobalObjects.larrlstJson) {
+				while (!IsJsonObjectSent) {
+					if (lobjJsonFileSystemData != null) {
+						GlobalObjects.larrlstJson.add(lobjJsonFileSystemData);
+					}
+				}
 			}
+		} catch (Exception ex) {
+			LOGGER.error("Exception in run : " + ex.getMessage());
 		}
 	}
-
+	
 	/**
-	 * Fetches Network Interface related data 
-	 * And inserts into a JSON object
-	 * Uses SIGAR's getNetInterfaceList function 
-	 * to fetch list of Network Interfaces available.
-	 * E.g.: eth0  
+	 * Fetches Network Interface related data And inserts into a JSON object Uses
+	 * SIGAR's getNetInterfaceList function to fetch list of Network Interfaces
+	 * available. E.g.: eth0
 	 */
 	private void getNetworkInterfaceList() {
 		String[] larrNetInterface = null;
@@ -62,15 +70,14 @@ public class NetworkData implements Runnable {
 				getNetworkInterfaceStat(lstrValue);
 			}
 		} catch (SigarException sigarEx) {
-			LOGGER.error("Exception in getNetworkInterfaceList : " + sigarEx.getMessage());
-		} finally {
-			larrNetInterface = null;
+			LOGGER.error(
+			    "Exception in getNetworkInterfaceList : " + sigarEx.getMessage());
 		}
 	}
-
+	
 	/**
-	 * Fetches Network Interface related data and inserts into a JSON object.
-	 * Uses SIGAR's NetStat class to fetch data.
+	 * Fetches Network Interface related data and inserts into a JSON object. Uses
+	 * SIGAR's NetStat class to fetch data.
 	 * 
 	 * @param lstrValue
 	 */
@@ -80,83 +87,101 @@ public class NetworkData implements Runnable {
 		try {
 			lobjNetStat = sigar.getNetStat();
 			String lstrRetrievedValues = "";
-
+			
 			lstrRetrievedValues = "" + lobjNetStat.getAllInboundTotal();
-			lobjJsonFileSystemData.put("NetworkData_NetStat_TotalInbound", lstrRetrievedValues);
+			lobjJsonFileSystemData.put("NetworkData_NetStat_TotalInbound",
+			    lstrRetrievedValues);
 			LOGGER.info("NetworkData_NetStat_TotalInbound : " + lstrRetrievedValues);
-
+			
 			lstrRetrievedValues = "" + lobjNetStat.getAllOutboundTotal();
-			lobjJsonFileSystemData.put("NetworkData_NetStat_TotalOutbound", lstrRetrievedValues);
+			lobjJsonFileSystemData.put("NetworkData_NetStat_TotalOutbound",
+			    lstrRetrievedValues);
 			LOGGER.info("NetworkData_NetStat_TotalOutbound : " + lstrRetrievedValues);
-
+			
 			lstrRetrievedValues = "" + lobjNetStat.getTcpEstablished();
-			lobjJsonFileSystemData.put("NetworkData_NetStat_TcpEstablished", lstrRetrievedValues);
-			LOGGER.info("NetworkData_NetStat_TcpEstablished : " + lstrRetrievedValues);
-
+			lobjJsonFileSystemData.put("NetworkData_NetStat_TcpEstablished",
+			    lstrRetrievedValues);
+			LOGGER
+			    .info("NetworkData_NetStat_TcpEstablished : " + lstrRetrievedValues);
+			
 			lstrRetrievedValues = "" + lobjNetStat.getTcpIdle();
-			lobjJsonFileSystemData.put("NetworkData_NetStat_TcpIdle", lstrRetrievedValues);
+			lobjJsonFileSystemData.put("NetworkData_NetStat_TcpIdle",
+			    lstrRetrievedValues);
 			LOGGER.info("NetworkData_NetStat_TcpIdle : " + lstrRetrievedValues);
-
+			
 			lstrRetrievedValues = "" + lobjNetStat.getTcpListen();
-			lobjJsonFileSystemData.put("NetworkData_NetStat_TcpListen", lstrRetrievedValues);
+			lobjJsonFileSystemData.put("NetworkData_NetStat_TcpListen",
+			    lstrRetrievedValues);
 			LOGGER.info("NetworkData_NetStat_TcpListen : " + lstrRetrievedValues);
-
+			
 			lstrRetrievedValues = "" + lobjNetStat.getTcpTimeWait();
-			lobjJsonFileSystemData.put("NetworkData_NetStat_TcpWaitTime", lstrRetrievedValues);
+			lobjJsonFileSystemData.put("NetworkData_NetStat_TcpWaitTime",
+			    lstrRetrievedValues);
 			LOGGER.info("NetworkData_NetStat_TcpWaitTime : " + lstrRetrievedValues);
-
+			
 		} catch (SigarException sigarEx) {
-			LOGGER.error("Exception in getNetworkInterfaceList : " + sigarEx.getMessage());
-		} finally {
-			lobjNetStat = null;
+			LOGGER.error(
+			    "Exception in getNetworkInterfaceList : " + sigarEx.getMessage());
 		}
+		LOGGER.info(GlobalObjects.gstrSTAR);
 	}
-
+	
 	/**
-	 * Fetches Network Interface related data and inserts into a JSON object.
-	 * Uses SIGAR's NetStat class to fetch data. 
+	 * Fetches Network Interface related data and inserts into a JSON object. Uses
+	 * SIGAR's NetStat class to fetch data.
 	 */
 	@SuppressWarnings("unchecked")
 	private void getNetConnections() {
 		NetConnection[] lobjNetConnections = null;
 		try {
-			int flags = NetFlags.CONN_SERVER | NetFlags.CONN_CLIENT | NetFlags.CONN_TCP;
-
+			int flags = NetFlags.CONN_SERVER | NetFlags.CONN_CLIENT
+			    | NetFlags.CONN_TCP;
+			
 			lobjNetConnections = sigar.getNetConnectionList(flags);
 			int count = 0;
 			String lstrRetrievedValues = "";
-
+			
 			for (NetConnection conn : lobjNetConnections) {
-
+				
 				lstrRetrievedValues = "" + conn.getLocalAddress();
-				lobjJsonFileSystemData.put("NetworkData_NetConn" + (count + 1) + "_LocalAddress", lstrRetrievedValues);
-				LOGGER.info("NetworkData_NetConn" + (count + 1) + "_LocalAddress : " + lstrRetrievedValues);
-
+				lobjJsonFileSystemData.put(
+				    "NetworkData_NetConn" + (count + 1) + "_LocalAddress",
+				    lstrRetrievedValues);
+				LOGGER.info("NetworkData_NetConn" + (count + 1) + "_LocalAddress : "
+				    + lstrRetrievedValues);
+				
 				lstrRetrievedValues = "" + conn.getLocalPort();
-				lobjJsonFileSystemData.put("NetworkData_NetConn" + (count + 1) + "_LocalPort", lstrRetrievedValues);
-				LOGGER.info("NetworkData_NetConn" + (count + 1) + "_LocalPort : " + lstrRetrievedValues);
-
+				lobjJsonFileSystemData.put(
+				    "NetworkData_NetConn" + (count + 1) + "_LocalPort",
+				    lstrRetrievedValues);
+				LOGGER.info("NetworkData_NetConn" + (count + 1) + "_LocalPort : "
+				    + lstrRetrievedValues);
+				
 				lstrRetrievedValues = "" + conn.getStateString();
-				lobjJsonFileSystemData.put("NetworkData_NetConn" + (count + 1) + "_State", lstrRetrievedValues);
-				LOGGER.info("NetworkData_NetConn" + (count + 1) + "_State : " + lstrRetrievedValues);
-
+				lobjJsonFileSystemData.put(
+				    "NetworkData_NetConn" + (count + 1) + "_State",
+				    lstrRetrievedValues);
+				LOGGER.info("NetworkData_NetConn" + (count + 1) + "_State : "
+				    + lstrRetrievedValues);
+				
 				lstrRetrievedValues = "" + conn.getTypeString();
-				lobjJsonFileSystemData.put("NetworkData_NetConn" + (count + 1) + "_Type", lstrRetrievedValues);
-				LOGGER.info("NetworkData_NetConn" + (count + 1) + "_Type : " + lstrRetrievedValues);
-
+				lobjJsonFileSystemData.put(
+				    "NetworkData_NetConn" + (count + 1) + "_Type", lstrRetrievedValues);
+				LOGGER.info("NetworkData_NetConn" + (count + 1) + "_Type : "
+				    + lstrRetrievedValues);
+				
 				count++;
+				
+				LOGGER.info(GlobalObjects.gstrSTAR);
 			}
 		} catch (SigarException sigarEx) {
-			LOGGER.error("Exception in getNetworkData : " + sigarEx.getMessage());
-		} finally {
-			lobjNetConnections = null;
+			LOGGER.error("Exception in getNetConnections : " + sigarEx.getMessage());
 		}
-		LOGGER.info("**************************************");
 	}
-
+	
 	/**
-	 * Fetches Network Interface related data and inserts into a JSON object.
-	 * Uses SIGAR's NetInterfaceConfig class to fetch data.  
+	 * Fetches Network Interface related data and inserts into a JSON object. Uses
+	 * SIGAR's NetInterfaceConfig class to fetch data.
 	 */
 	@SuppressWarnings("unchecked")
 	private void getNetworkInterfaceConfig(String pstrValue) {
@@ -165,62 +190,70 @@ public class NetworkData implements Runnable {
 		try {
 			lobjNetInterfaceConfig = sigar.getNetInterfaceConfig(pstrValue);
 			String lstrRetrievedValues = "";
-
+			
 			lstrRetrievedValues = "" + lobjNetInterfaceConfig.getAddress();
-			lobjJsonFileSystemData.put("NetworkData_Config_Address", lstrRetrievedValues);
+			lobjJsonFileSystemData.put("NetworkData_Config_Address",
+			    lstrRetrievedValues);
 			LOGGER.info("NetworkData_Config_Address : " + lstrRetrievedValues);
-
+			
 			lstrRetrievedValues = "" + lobjNetInterfaceConfig.getDescription();
-			lobjJsonFileSystemData.put("NetworkData_Config_Description", lstrRetrievedValues);
+			lobjJsonFileSystemData.put("NetworkData_Config_Description",
+			    lstrRetrievedValues);
 			LOGGER.info("NetworkData_Config_Description : " + lstrRetrievedValues);
-
+			
 			lstrRetrievedValues = "" + lobjNetInterfaceConfig.getBroadcast();
-			lobjJsonFileSystemData.put("NetworkData_Config_Broadcast", lstrRetrievedValues);
+			lobjJsonFileSystemData.put("NetworkData_Config_Broadcast",
+			    lstrRetrievedValues);
 			LOGGER.info("NetworkData_Config_Broadcast : " + lstrRetrievedValues);
-
+			
 			lstrRetrievedValues = "" + lobjNetInterfaceConfig.getDestination();
-			lobjJsonFileSystemData.put("NetworkData_Config_Destination", lstrRetrievedValues);
+			lobjJsonFileSystemData.put("NetworkData_Config_Destination",
+			    lstrRetrievedValues);
 			LOGGER.info("NetworkData_Config_Destination : " + lstrRetrievedValues);
-
+			
 			lstrRetrievedValues = "" + lobjNetInterfaceConfig.getFlags();
-			lobjJsonFileSystemData.put("NetworkData_Config_Flags", lstrRetrievedValues);
+			lobjJsonFileSystemData.put("NetworkData_Config_Flags",
+			    lstrRetrievedValues);
 			LOGGER.info("NetworkData_Config_Flags : " + lstrRetrievedValues);
-
+			
 			lstrRetrievedValues = "" + lobjNetInterfaceConfig.getHwaddr();
-			lobjJsonFileSystemData.put("NetworkData_Config_HwAddress", lstrRetrievedValues);
+			lobjJsonFileSystemData.put("NetworkData_Config_HwAddress",
+			    lstrRetrievedValues);
 			LOGGER.info("NetworkData_Config_HwAddress : " + lstrRetrievedValues);
-
+			
 			lstrRetrievedValues = "" + lobjNetInterfaceConfig.getMetric();
-			lobjJsonFileSystemData.put("NetworkData_Config_Metric", lstrRetrievedValues);
+			lobjJsonFileSystemData.put("NetworkData_Config_Metric",
+			    lstrRetrievedValues);
 			LOGGER.info("NetworkData_Config_Metric : " + lstrRetrievedValues);
-
+			
 			lstrRetrievedValues = "" + lobjNetInterfaceConfig.getMtu();
 			lobjJsonFileSystemData.put("NetworkData_Config_Mtu", lstrRetrievedValues);
 			LOGGER.info("NetworkData_Config_Mtu : " + lstrRetrievedValues);
-
+			
 			lstrRetrievedValues = "" + lobjNetInterfaceConfig.getName();
-			lobjJsonFileSystemData.put("NetworkData_Config_Name", lstrRetrievedValues);
+			lobjJsonFileSystemData.put("NetworkData_Config_Name",
+			    lstrRetrievedValues);
 			LOGGER.info("NetworkData_Config_Name : " + lstrRetrievedValues);
-
+			
 			lstrRetrievedValues = "" + lobjNetInterfaceConfig.getNetmask();
-			lobjJsonFileSystemData.put("NetworkData_Config_Netmask", lstrRetrievedValues);
+			lobjJsonFileSystemData.put("NetworkData_Config_Netmask",
+			    lstrRetrievedValues);
 			LOGGER.info("NetworkData_Config_Natmask : " + lstrRetrievedValues);
-
+			
 			lstrRetrievedValues = "" + lobjNetInterfaceConfig.getType();
-			lobjJsonFileSystemData.put("NetworkData_Config_Type", lstrRetrievedValues);
+			lobjJsonFileSystemData.put("NetworkData_Config_Type",
+			    lstrRetrievedValues);
 			LOGGER.info("NetworkData_Config_Type : " + lstrRetrievedValues);
-
+			
 		} catch (SigarException sigarEx) {
-			LOGGER.error("Exception in getNetworkData : " + sigarEx.getMessage());
-		} finally {
-			lobjNetInterfaceConfig = null;
+			LOGGER.error("Exception in getNetworkInterfaceConfig : " + sigarEx.getMessage());
 		}
-		LOGGER.info("**************************************");
+		LOGGER.info(GlobalObjects.gstrSTAR);
 	}
-
+	
 	/**
-	 * Fetches Network Interface related data and inserts into a JSON object.
-	 * Uses SIGAR's NetInfo class to fetch data.  
+	 * Fetches Network Interface related data and inserts into a JSON object. Uses
+	 * SIGAR's NetInfo class to fetch data.
 	 */
 	@SuppressWarnings("unchecked")
 	private void getNetworkData() {
@@ -228,36 +261,36 @@ public class NetworkData implements Runnable {
 		NetInfo lobjNetInfo = null;
 		try {
 			lobjNetInfo = sigar.getNetInfo();
-
+			
 			String lstrRetrievedValues = "";
-
+			
 			lstrRetrievedValues = "" + lobjNetInfo.getHostName();
 			lobjJsonFileSystemData.put("NetworkData_HostName", lstrRetrievedValues);
 			LOGGER.info("Host Name : " + lstrRetrievedValues);
-
+			
 			lstrRetrievedValues = "" + lobjNetInfo.getPrimaryDns();
 			lobjJsonFileSystemData.put("NetworkData_PrimaryDNS", lstrRetrievedValues);
 			LOGGER.info("Primary DNS : " + lstrRetrievedValues);
-
+			
 			lstrRetrievedValues = "" + lobjNetInfo.getDefaultGateway();
-			lobjJsonFileSystemData.put("NetworkData_DefaultGateway", lstrRetrievedValues);
+			lobjJsonFileSystemData.put("NetworkData_DefaultGateway",
+			    lstrRetrievedValues);
 			LOGGER.info("Default Gateway : " + lstrRetrievedValues);
-
+			
 			lstrRetrievedValues = "" + lobjNetInfo.getSecondaryDns();
-			lobjJsonFileSystemData.put("NetworkData_SecondaryDNS", lstrRetrievedValues);
+			lobjJsonFileSystemData.put("NetworkData_SecondaryDNS",
+			    lstrRetrievedValues);
 			LOGGER.info("Secondary DNS : " + lstrRetrievedValues);
-
+			
 		} catch (SigarException sigarEx) {
 			LOGGER.error("Exception in getNetworkData : " + sigarEx.getMessage());
-		} finally {
-			lobjNetInfo = null;
 		}
-		LOGGER.info("**************************************");
+		LOGGER.info(GlobalObjects.gstrSTAR);
 	}
-
+	
 	/**
-	 * Fetches Network Interface related data and inserts into a JSON object.
-	 * Uses SIGAR's NetRoute class to fetch data.  
+	 * Fetches Network Interface related data and inserts into a JSON object. Uses
+	 * SIGAR's NetRoute class to fetch data.
 	 */
 	@SuppressWarnings("unchecked")
 	private void getNetRoute() {
@@ -268,35 +301,52 @@ public class NetworkData implements Runnable {
 			lobjNetRouteArr = sigar.getNetRouteList();
 			for (NetRoute lobjNetRoute : lobjNetRouteArr) {
 				lstrRetrievedValues = "" + lobjNetRoute.getDestination();
-				lobjJsonFileSystemData.put("NetworkData_NetRoute" + (count + 1) + "_Destination", lstrRetrievedValues);
-				LOGGER.info("NetworkData_NetRoute" + (count + 1) + "_Destination : " + lstrRetrievedValues);
-
+				lobjJsonFileSystemData.put(
+				    "NetworkData_NetRoute" + (count + 1) + "_Destination",
+				    lstrRetrievedValues);
+				LOGGER.info("NetworkData_NetRoute" + (count + 1) + "_Destination : "
+				    + lstrRetrievedValues);
+				
 				lstrRetrievedValues = "" + lobjNetRoute.getFlags();
-				lobjJsonFileSystemData.put("NetworkData_NetRoute" + (count + 1) + "_Flags", lstrRetrievedValues);
-				LOGGER.info("NetworkData_NetRoute" + (count + 1) + "_Flags : " + lstrRetrievedValues);
-
+				lobjJsonFileSystemData.put(
+				    "NetworkData_NetRoute" + (count + 1) + "_Flags",
+				    lstrRetrievedValues);
+				LOGGER.info("NetworkData_NetRoute" + (count + 1) + "_Flags : "
+				    + lstrRetrievedValues);
+				
 				lstrRetrievedValues = "" + lobjNetRoute.getGateway();
-				lobjJsonFileSystemData.put("NetworkData_NetRoute" + (count + 1) + "_Gateway", lstrRetrievedValues);
-				LOGGER.info("NetworkData_NetRoute" + (count + 1) + "_Gateway : " + lstrRetrievedValues);
-
+				lobjJsonFileSystemData.put(
+				    "NetworkData_NetRoute" + (count + 1) + "_Gateway",
+				    lstrRetrievedValues);
+				LOGGER.info("NetworkData_NetRoute" + (count + 1) + "_Gateway : "
+				    + lstrRetrievedValues);
+				
 				lstrRetrievedValues = "" + lobjNetRoute.getIfname();
-				lobjJsonFileSystemData.put("NetworkData_NetRoute" + (count + 1) + "_IfName", lstrRetrievedValues);
-				LOGGER.info("NetworkData_NetRoute" + (count + 1) + "_IfName : " + lstrRetrievedValues);
-
+				lobjJsonFileSystemData.put(
+				    "NetworkData_NetRoute" + (count + 1) + "_IfName",
+				    lstrRetrievedValues);
+				LOGGER.info("NetworkData_NetRoute" + (count + 1) + "_IfName : "
+				    + lstrRetrievedValues);
+				
 				lstrRetrievedValues = "" + lobjNetRoute.getMask();
-				lobjJsonFileSystemData.put("NetworkData_NetRoute" + (count + 1) + "_Mask", lstrRetrievedValues);
-				LOGGER.info("NetworkData_NetRoute" + (count + 1) + "_Mask : " + lstrRetrievedValues);
-
+				lobjJsonFileSystemData.put(
+				    "NetworkData_NetRoute" + (count + 1) + "_Mask",
+				    lstrRetrievedValues);
+				LOGGER.info("NetworkData_NetRoute" + (count + 1) + "_Mask : "
+				    + lstrRetrievedValues);
+				
 				lstrRetrievedValues = "" + lobjNetRoute.getMetric();
-				lobjJsonFileSystemData.put("NetworkData_NetRoute" + (count + 1) + "_Metric", lstrRetrievedValues);
-				LOGGER.info("NetworkData_NetRoute" + (count + 1) + "_Metric : " + lstrRetrievedValues);
-
+				lobjJsonFileSystemData.put(
+				    "NetworkData_NetRoute" + (count + 1) + "_Metric",
+				    lstrRetrievedValues);
+				LOGGER.info("NetworkData_NetRoute" + (count + 1) + "_Metric : "
+				    + lstrRetrievedValues);
+				
 				count++;
+				LOGGER.info(GlobalObjects.gstrSTAR);
 			}
 		} catch (SigarException sigarEx) {
-			LOGGER.error("Exception in getNetworkData : " + sigarEx.getMessage());
-		} finally {
-			lobjNetRouteArr = null;
+			LOGGER.error("Exception in getNetRoute : " + sigarEx.getMessage());
 		}
 	}
 }

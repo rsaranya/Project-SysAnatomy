@@ -30,7 +30,11 @@ public class CpuData implements Runnable {
 	 * system.
 	 */
 	public CpuData() {
-		new Thread(this).start();
+		try {
+			new Thread(this).start();
+		} catch (Exception ex) {
+			LOGGER.error("Exception in CpuData : " + ex.getMessage());
+		}
 	}
 	
 	/**
@@ -150,8 +154,8 @@ public class CpuData implements Runnable {
 					LOGGER.info("CPU vendor id : " + lstrRetrievedValues);
 				}
 			}
-		} catch (Exception sigarEx) {
-			LOGGER.error("Exception in getDataFromCpuInfo : " + sigarEx.getMessage());
+		} catch (Exception ex) {
+			LOGGER.error("Exception in getDataFromCpuInfo : " + ex.getMessage());
 		}
 		LOGGER.info(GlobalObjects.gstrSTAR);
 	}
@@ -208,8 +212,8 @@ public class CpuData implements Runnable {
 					count++;
 				}
 			}
-		} catch (Exception sigarEx) {
-			LOGGER.error("Exception in getDataFromCpuPerc : " + sigarEx.getMessage());
+		} catch (Exception ex) {
+			LOGGER.error("Exception in getDataFromCpuPerc : " + ex.getMessage());
 		}
 		LOGGER.info(GlobalObjects.gstrSTAR);
 	}
@@ -219,17 +223,21 @@ public class CpuData implements Runnable {
 	 * adds the JSON object into a global array
 	 */
 	public void run() {
-		getDataFromCpu();
-		getDataFromCpuInfo();
-		getDataFromCpuPerc();
-		
-		synchronized (GlobalObjects.larrlstJson) {
-			while (!IsJsonObjectSent) {
-				if (lobjJsonCpuData != null) {
-					GlobalObjects.larrlstJson.add(lobjJsonCpuData);
-					IsJsonObjectSent = true;
+		try {
+			getDataFromCpu();
+			getDataFromCpuInfo();
+			getDataFromCpuPerc();
+			
+			synchronized (GlobalObjects.larrlstJson) {
+				while (!IsJsonObjectSent) {
+					if (lobjJsonCpuData != null) {
+						GlobalObjects.larrlstJson.add(lobjJsonCpuData);
+						IsJsonObjectSent = true;
+					}
 				}
 			}
+		} catch (Exception ex) {
+			LOGGER.error("Exception in run : " + ex.getMessage());
 		}
 	}
 }

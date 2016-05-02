@@ -11,11 +11,13 @@ import org.json.simple.JSONObject;
  * @author Saranya
  */
 public class GlobalObjects {
-	//Contains the functions to send data to the Web Server.
+	// Contains the functions to send data to the Web Server.
 	public static final ConnectServer gobjConnectToServer = new ConnectServer();
-
-	//Queue which is used by all the classes 
-	public static ArrayList<JSONObject> larrlstJson = new ArrayList<JSONObject>(10);
 	
+	// Queue which is used by all the classes to push JSON objects with data.
+	public static ArrayList<JSONObject> larrlstJson = new ArrayList<JSONObject>(
+	    10);
+	
+	// Used as a constant to separate blocks of similar data.
 	public static final String gstrSTAR = "**************************************";
 }

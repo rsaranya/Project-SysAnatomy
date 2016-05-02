@@ -19,10 +19,10 @@ import javax.ws.rs.core.Response;
 @Path("/")
 public class SysAnatomyRESTService {
 	@POST
-	@Path("/crunchifyService")
+	@Path("/WebService")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response crunchifyREST(InputStream incomingData) {
-		System.out.println("Inside crunchifyREST ");
+		System.out.println("Inside SysAnatomyREST ");
 		StringBuilder crunchifyBuilder = new StringBuilder();
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(incomingData));
@@ -48,7 +48,7 @@ public class SysAnatomyRESTService {
 	@Path("/verify")
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response verifyRESTService(InputStream incomingData) {
-		String result = "CrunchifyRESTService Successfully started..";
+		String result = "SysAnatomyRESTService Successfully started..";
  
 		// return HTTP response 200 in case of success
 		return Response.status(200).entity(result).build();

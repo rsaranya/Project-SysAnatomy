@@ -12,48 +12,71 @@ import org.json.simple.JSONObject;
 import WindowsService.MemoryData;
 
 /**
- * 
+ * Connects to the server sends JSON objects
  * @author Saranya
  *
  */
 public class ConnectServer implements Runnable {
-	private static final Logger LOGGER = LogManager.getLogger(MemoryData.class.getName());
-
+	private static final Logger LOGGER = LogManager
+	    .getLogger(MemoryData.class.getName());
+	
+	/**
+	 * 
+	 */
 	public ConnectServer() {
-		new Thread(this).start();
+		try {
+			new Thread(this).start();
+		} catch (Exception ex) {
+			LOGGER.error("Exception in ConnectServer : " + ex.getMessage());
+		}
 	}
-
+	
+	/**
+	 * 
+	 * @param pobjJsonToSend
+	 */
 	public void sendJsonToServer(JSONObject pobjJsonToSend) {
 		try {
-			// Pass JSON File Data to REST Service
+			// Pass JSON Data to REST Service
 			try {
 				LOGGER.info("Inside sendJsonToServer");
-				URL url = new URL("http://localhost:8080/SysAnatomyWebService/api/crunchifyService");
-				URLConnection connection = url.openConnection();
-				connection.setDoOutput(true);
-				connection.setRequestProperty("Content-Type", "application/json");
-				connection.setConnectTimeout(5000);
-				connection.setReadTimeout(5000);
-				OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
-				out.write(pobjJsonToSend.toString());
-				out.close();
-
-				BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
+				
+				// URL of the Web Service
+				URL lurlSysAnatomy = new URL(
+				    "http://localhost:8080/SysAnatomyWebService/api/WebService");
+				//Properties for the Json object
+				URLConnection lurlconSysAnatomy = lurlSysAnatomy.openConnection();
+				lurlconSysAnatomy.setDoOutput(true);
+				lurlconSysAnatomy.setRequestProperty("Content-Type",
+				    "application/json");
+				lurlconSysAnatomy.setConnectTimeout(5000);
+				lurlconSysAnatomy.setReadTimeout(5000);
+				
+				OutputStreamWriter loutStreamWriter = new OutputStreamWriter(
+				    lurlconSysAnatomy.getOutputStream());
+				loutStreamWriter.write(pobjJsonToSend.toString());
+				loutStreamWriter.close();
+				
+				BufferedReader in = new BufferedReader(
+				    new InputStreamReader(lurlconSysAnatomy.getInputStream()));
+				
 				while (in.readLine() != null) {
 				}
-				System.out.println("\nCrunchify REST Service Invoked Successfully..");
+				System.out.println("SysAnatomy REST Service Invoked Successfully..");
 				in.close();
 			} catch (Exception e) {
-				System.out.println("\nError while calling Crunchify REST Service");
+				System.out.println("\nError while calling SysAnatomy REST Service");
 				System.out.println(e);
 			}
-
+			
 		} catch (Exception ex) {
 			LOGGER.error("Exception in sendJsonToServer : " + ex.getMessage());
 		}
 	}
-
+	
+	/**
+	 * 
+	 */
 	public void run() {
 		synchronized (GlobalObjects.larrlstJson) {
 			while (true) {
