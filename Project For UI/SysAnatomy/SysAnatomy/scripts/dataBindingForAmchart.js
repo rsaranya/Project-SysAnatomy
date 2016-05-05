@@ -23,7 +23,7 @@ function displayHeatMap()
 
     // now let's populate the source data with the colors based on the value
     // as well as replace the original value with 1
-    var colors = ['#FF0000', '#ff6666', '#FCD1D1', '#800000', '#A52A2A'];
+    var colors = ['#FF0000', '#ff6666', '#FCD1D1', '#800000', '#A52A2A' ];
     for (i in sourceData) {
         for (var h = 0; h <= 23; h++) {
             sourceData[i]['color' + h] = colors[sourceData[i]['value' + h]];

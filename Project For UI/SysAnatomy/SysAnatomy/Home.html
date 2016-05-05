@@ -1,5 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
+<!--Author Sourav Bhowmik-->
+<!--This is the home page for SysAnatomy-->
 <head>
     <title>SysAnatomy Home</title>
     <meta charset="utf-8" />
@@ -19,6 +21,7 @@
     <script src="assets/js/main.js"></script>
     <script type="text/javascript" src="amcharts/amcharts.js"></script>
     <script type="text/javascript" src="amcharts/serial.js"></script>
+    <script type="text/javascript" src="gaugefunction.js"></script>
     <script type="text/javascript" src="https://www.amcharts.com/lib/3/pie.js"></script>
     <script type="text/javascript" src="https://www.amcharts.com/lib/3/gauge.js"></script>
     <script type="text/javascript" src="https://www.amcharts.com/lib/3/themes/light.js"></script>
@@ -48,6 +51,7 @@
                                         <li><a href="#">Process 1</a></li>
                                         <li><a href="#">Process 2</a></li>
                                         <li><a href="#">Process 3</a></li>
+                                        <li><a href="ProcessInfo.html">More.....</a></li>
                                     </ul>
                                 </li>
                                 <li><a class="icon fa-retweet" href="CPUStats.html"><span>CPU Stats</span></a></li>
@@ -63,6 +67,7 @@
         <tr>
             <td colspan="3">
                 <center>
+                    <!--Download Button-->
                     <div class="monitor windows" style="width: 50%">
                         <a class="button" id="download-link" href="http://tryingservicezip.weebly.com/uploads/7/9/2/3/79235092/createservice.zip" download="JavaImage.png">Download Desktop Service</a>
                     </div>
@@ -82,6 +87,8 @@
         </tr>
         <tr>
             <td colspan="3" style="background-color:white">
+                
+                <!--Heat Map-->
                 <div id="chartdiv" style="height: 400px;"></div>
             </td>
         </tr>
@@ -92,6 +99,7 @@
                         <div class="4u 12u(mobile)">
                             <!-- Feature -->
                             <section>
+                                <!--First graph-->
                                 <div id="chartdiv1" style="height: 400px"></div>
                                 <header>
                                     <h3>This is the Memory graph</h3>
@@ -107,6 +115,7 @@
                         <div class="4u 12u(mobile)">
                             <!-- Feature -->
                             <section>
+                                <!--Second Graph-->
                                 <div id="chartdiv2" style="height: 400px"></div>
                                 <header>
                                     <h3>this is graph for no. of active processes</h3>
@@ -123,6 +132,7 @@
                         <div class="4u 12u(mobile)">
                             <!-- Feature -->
                             <section>
+                                <!-- Pie Chart-->
                                 <div id="chartdiv3" style="height:400px"></div>
                                 <header>
                                     <h3>this is CPU clock speed live meter</h3>
@@ -216,38 +226,81 @@
     </table>
     <!-- fancy 3D pie-chart-->
     <script>
-        var chart = AmCharts.makeChart("chartdiv3", {
-            "type": "pie",
-            "theme": "dark",
-            "dataProvider": [{
-                "country": "Lithuania",
-                "value": 260
-            }, {
-                "country": "Ireland",
-                "value": 201
-            }, {
-                "country": "Germany",
-                "value": 65
-            }, {
-                "country": "Australia",
-                "value": 39
-            }, {
-                "country": "UK",
-                "value": 19
-            }, {
-                "country": "Latvia",
-                "value": 10
-            }],
-            "valueField": "value",
-            "titleField": "country",
-            "outlineAlpha": 0.4,
-            "depth3D": 15,
-            "balloonText": "[[title]]<br><span style='font-size:14px'><b>[[value]]</b> ([[percents]]%)</span>",
-            "angle": 30,
-            "export": {
-                "enabled": true
-            }
-        });
+        var chart;
+        var legend;
+
+        var chartData = [{
+            country: "Czech Republic",
+            litres: 301.90
+        }, {
+            country: "Ireland",
+            litres: 201.10
+        }, {
+            country: "Germany",
+            litres: 165.80
+        }, {
+            country: "Australia",
+            litres: 139.90
+        }, {
+            country: "Austria",
+            litres: 128.30
+        }, {
+            country: "UK",
+            litres: 99.00
+        }, {
+            country: "Belgium",
+            litres: 60.00
+        }];
+
+       
+      /*  var allDrives = {
+            totalSpace1: []
+        };
+
+        for (var i in inComingData) {
+
+            var item = inComingData[i];
+
+            allDrives.totalSpace1.push({
+                "drivename": item.DName,
+                "actualSpace": item.spaceOccupied,  
+            });
+        }
+        */
+        var j1 = {
+        "type": "pie",
+        "theme": "dark",
+        "dataProvider": [{
+            "drivename": "C:",
+            "actualSpace": 26
+        }, {
+            "drivename": "D:",
+            "actualSpace": 200
+        }, {
+            "drivename": "E:",
+            "actualSpace": 65
+        }, {
+            "drivename": "F:",
+            "actualSpace": 39
+        }, {
+            "drivename": "A:",
+            "actualSpace": 19
+        }],
+        "valueField": "actualSpace",
+        "titleField": "drivename",
+        "outlineAlpha": 0.4,
+        "depth3D": 80,
+        "balloonText": "[[title]]<br><span style='font-size:14px'><b>[[value]]</b> ([[percents]]%)</span>",
+        "angle": 50,
+        "export": {
+            "enabled": true
+        }
+           
+        };
+
+        var chart = AmCharts.makeChart("chartdiv3", j1 );
+        
+        //clearLabels();
         jQuery('.chart-input').off().on('input change', function () {
             var property = jQuery(this).data('property');
             var target = chart;
@@ -262,7 +315,12 @@
             chart.validateNow();
         });
     </script>
-    <!--wavy graph aka Area with time based info-->
+
+
+
+
+
+    <!--regular graph...middle one-->
     <script>
 // generate data
         var chartData = [];
@@ -339,59 +397,100 @@
             }
         });</script>
 
+
+
+
+    //speedo guage
     <script>
-        var gaugeChart = AmCharts.makeChart("chartdiv1", {
-            "type": "gauge",
-            "theme": "light",
-            "axes": [{
-                "axisThickness": 1,
-                "axisAlpha": 0.2,
-                "tickAlpha": 0.2,
-                "valueInterval": 20,
-                "bands": [{
-                    "color": "#84b761",
-                    "endValue": 90,
-                    "startValue": 0
-                }, {
-                    "color": "#fdd400",
-                    "endValue": 130,
-                    "startValue": 90
-                }, {
-                    "color": "#cc4748",
-                    "endValue": 220,
-                    "innerRadius": "95%",
-                    "startValue": 130
-                }],
-                "bottomText": "0 km/h",
-                "bottomTextYOffset": -20,
-                "endValue": 220
-            }],
-            "arrows": [{}],
-            "export": {
-                "enabled": true
+        gauge();
+        //var gaugeChart = AmCharts.makeChart("chartdiv1", {
+        //    "type": "gauge",
+        //    "theme": "light",
+        //    "axes": [{
+        //        "axisThickness": 1,
+        //        "axisAlpha": 0.2,
+        //        "tickAlpha": 0.2,
+        //        "valueInterval": 20,
+        //        "bands": [{
+        //            "color": "#84b761",
+        //            "endValue": 90,
+        //            "startValue": 0
+        //        }, {
+        //            "color": "#fdd400",
+        //            "endValue": 130,
+        //            "startValue": 90
+        //        }, {
+        //            "color": "#cc4748",
+        //            "endValue": 220,
+        //            "innerRadius": "95%",
+        //            "startValue": 130
+        //        },
+        //        {
+        //            "color": "#FF0000",
+        //            "endValue": 300,
+        //            "innerRadius": "95%",
+        //            "startValue": 220
+        //        }
+        //        ],
+        //        "bottomText": "0 GHz",
+        //        "bottomTextYOffset": -20,
+        //        "endValue": 290
+        //    }],
+        //    "arrows": [{}],
+        //    "export": {
+        //        "enabled": true
+        //    }
+        //});
+
+        //setInterval(randomValue, 2000);
+        ////speed guage code
+        //// set random value
+        //var value=200 //set the value here
+        //function randomValue() {
+        //    //value =110// Math.round(Math.random() * 200);
+        //    if (gaugeChart) {
+        //        if (gaugeChart.arrows) {
+        //            if (gaugeChart.arrows[0]) {
+        //                if (gaugeChart.arrows[0].setValue) {
+        //                    gaugeChart.arrows[0].setValue(value);
+        //                    //value that gets printed below
+        //                    gaugeChart.axes[0].setBottomText(value/100 + " GHz");
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
+    </script>
+
+
+
+
+
+
+
+
+
+    <!----<p id="demo"></p>-->
+
+
+  <!--heatmap -->  
+    <script>
+        function adjustBalloonText(graphDataItem, graph) {
+            var value = graphDataItem.values.value;
+
+            if (value) {
+                return value + "<br>Hey does this work?? : " + 20 + " <br/> Next Line ?";
             }
-        });
-
-        setInterval(randomValue, 2000);
-
-        // set random value
-        function randomValue() {
-            var value = Math.round(Math.random() * 200);
-            if (gaugeChart) {
-                if (gaugeChart.arrows) {
-                    if (gaugeChart.arrows[0]) {
-                        if (gaugeChart.arrows[0].setValue) {
-                            gaugeChart.arrows[0].setValue(value);
-                            gaugeChart.axes[0].setBottomText(value + " km/h");
-                        }
-                    }
-                }
+            else {
+                return value + "<br>(A Lot)";
             }
         }
-    </script>
-    <script>
+        
+
+
+
         var sourceData = [];
-        var firstDate = new Date();
+       var firstDate = new Date();
         firstDate.setDate(firstDate.getDate() - 28);
         firstDate.setHours(0, 0, 0, 0);
 
@@ -404,7 +503,9 @@
 
             // generate value for each hour
             for (var h = 0; h <= 23; h++) {
-                dataPoint['value' + h] = Math.round(Math.random() * 4);
+
+                //8 is no. colors being displayed
+                dataPoint['value' + h] = Math.round(Math.random() * 2);
             }
 
             sourceData.push(dataPoint);
@@ -412,7 +513,7 @@
 
         // now let's populate the source data with the colors based on the value
         // as well as replace the original value with 1
-        var colors = ['#FF0000', '#ff6666', '#FCD1D1', '#800000', '#A52A2A'];
+        var colors = ['#FF0000', '#ff6666', '#FCD1D1', '#800000', '#A52A2A', '#A52A2A', '#A52A20', '#A52A2C', '#A52A2B'];
         for (i in sourceData) {
             for (var h = 0; h <= 23; h++) {
                 sourceData[i]['color' + h] = colors[sourceData[i]['value' + h]];
@@ -420,11 +521,18 @@
             }
         }
 
+
+        //JSON testing code
+        var jsonObj = '{ "SystemData_Architecture": "x64", "SystemData_VendorCodeName": "Vienna", "SystemData_DataModel": "64", "SystemData_VendorName": "Windows 7", "SystemData_Description": "Microsoft Windows 7", "SystemData_MachineVendor": "Microsoft", "SystemData_MachineName": "Win32", "SystemData_MachineEndian": "little", "SystemData_VendorVersion": "7", "SystemData_MachineVersion": "6.2" }';
+        var obj1 = JSON.parse(jsonObj);
+       // alert(obj1.SystemData_MachineName);
+
         // define graph objects for each hour
         var graphs = [];
+      document.getElementById("chartdiv").innerHTML = obj1.SystemData_Architecture + " " + obj1.SystemData_VendorCodeName;
         for (var h = 0; h <= 23; h++) {
             graphs.push({
-                "balloonText": "Original value: [[value" + h + "]]",
+                "balloonText": "page fault: [[obj1.SystemData_Architecture" + obj1.SystemData_Architecture + "]]", //"Original v: [[value" +h+ obj1.SystemData_Architecture + "]] <br/> Memory m : [[value" + 20 + "]]",
                 "fillAlphas": 1,
                 "lineAlpha": 0,
                 "type": "column",
@@ -437,10 +545,12 @@
             "type": "serial",
             "dataProvider": sourceData,
             "valueAxes": [{
-                "stackType": "regular",
+               "stackType": "regular",
                 "axisAlpha": 0.3,
                 "gridAlpha": 0,
-                "maximum": 24,
+
+                //No. of blocks
+                "maximum": 10,
                 "duration": "mm",
                 "unit": ":00"
             }],
