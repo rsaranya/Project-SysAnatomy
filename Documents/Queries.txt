@@ -49,3 +49,33 @@ CIL_CLOCK_SPEED FLOAT(3),
 CIL_THREAD INT(6),
 CIL_CACHE INT(6)
 );
+
+
+create table sysanatomy.cpu_info(
+  
+cpu_idle_time varchar(50),
+  
+cpu_nice_time varchar(50),
+ 
+ cpu_invol_wait_time varchar(50),
+  
+cpu_kernel_time varchar(50),
+  
+cpu_time varchar(50),
+  
+cpu_user_time varchar(50),
+  
+cpu_wait_time varchar(50),
+ 
+ cpu_cache varchar(50),
+  
+cpu_vendor_id varchar(50),
+ 
+ cpu_cores varchar(50),
+ 
+ cpu_sockets varchar(50),
+ 
+ cpu_csocket varchar
+cpu_speed varchar(50),
+ 
+ cpu_model varchar(50));
