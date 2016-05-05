@@ -47,6 +47,7 @@ public class NetworkData implements Runnable {
 			synchronized (GlobalObjects.larrlstJson) {
 				while (!IsJsonObjectSent) {
 					if (lobjJsonFileSystemData != null) {
+						IsJsonObjectSent = true;
 						GlobalObjects.larrlstJson.add(lobjJsonFileSystemData);
 					}
 				}

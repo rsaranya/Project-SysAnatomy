@@ -100,6 +100,8 @@ public class SystemData implements Runnable {
 			synchronized (GlobalObjects.larrlstJson) {
 				while (!IsJsonObjectSent) {
 					if (lobjJsonSystemData != null) {
+						IsJsonObjectSent = true;
+						GlobalObjects.larrlstJson.ensureCapacity(5);
 						GlobalObjects.larrlstJson.add(lobjJsonSystemData);
 					}
 				}

@@ -22,19 +22,18 @@ import org.apache.logging.log4j.Logger;
 @Path("/")
 public class ReceiveRestService {
 	private static final Logger LOGGER = LogManager.getLogger();
-	
+
 	@SuppressWarnings("unused")
 	private static final ConnectServer connServer = new ConnectServer();
-	
+
 	@POST
 	@Path("/WebService")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response crunchifyREST(InputStream incomingData) {
+	public Response SysAnatomyREST(InputStream incomingData) {
 		LOGGER.info("Inside SysAnatomyREST ");
 		StringBuilder serviceBuilder = new StringBuilder();
 		try {
-			BufferedReader in = new BufferedReader(
-			    new InputStreamReader(incomingData));
+			BufferedReader in = new BufferedReader(new InputStreamReader(incomingData));
 			String line = null;
 			while ((line = in.readLine()) != null) {
 				serviceBuilder.append(line);
@@ -43,14 +42,15 @@ public class ReceiveRestService {
 			LOGGER.error("Error Parsing: - ");
 		}
 		LOGGER.info("Data Received: " + serviceBuilder.toString());
-		
+
 		synchronized (ConnectServer.larrlstJson) {
-			ConnectServer.larrlstJson.add(serviceBuilder.toString());
+			if (ConnectServer.larrlstJson != null)
+				ConnectServer.larrlstJson.add(serviceBuilder.toString());
 		}
 		// return HTTP response 200 in case of success
 		return Response.status(200).entity(serviceBuilder.toString()).build();
 	}
-	
+
 	/**
 	 * 
 	 * @param incomingData
@@ -61,7 +61,7 @@ public class ReceiveRestService {
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response verifyRESTService(InputStream incomingData) {
 		String result = "SysAnatomyRESTService Successfully started..";
-		
+
 		// return HTTP response 200 in case of success
 		return Response.status(200).entity(result).build();
 	}

@@ -105,8 +105,8 @@ public class MemoryData implements Runnable {
 			synchronized (GlobalObjects.larrlstJson) {
 				while (!IsJsonObjectSent) {
 					if (lobjJsonMemData != null) {
-						GlobalObjects.larrlstJson.add(lobjJsonMemData);
 						IsJsonObjectSent = true;
+						GlobalObjects.larrlstJson.add(lobjJsonMemData);
 					}
 				}
 			}
