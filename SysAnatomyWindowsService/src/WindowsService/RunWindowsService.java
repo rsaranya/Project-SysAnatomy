@@ -40,7 +40,7 @@ public class RunWindowsService {
 			new SystemData();
 			new FileSystemData();
 			new NetworkData();
-			new ProcessData();
+			//new ProcessData();
 		} catch (Exception ex) {
 			LOGGER.error("Exception in SpawnThreads : " + ex.getMessage());
 		}

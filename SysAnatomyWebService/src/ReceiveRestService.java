@@ -41,7 +41,7 @@ public class ReceiveRestService {
 		} catch (Exception e) {
 			LOGGER.error("Error Parsing: - ");
 		}
-		LOGGER.info("Data Received: " + serviceBuilder.toString());
+		System.out.println("Data Received: " + serviceBuilder.toString());
 
 		synchronized (ConnectServer.larrlstJson) {
 			if (ConnectServer.larrlstJson != null)
