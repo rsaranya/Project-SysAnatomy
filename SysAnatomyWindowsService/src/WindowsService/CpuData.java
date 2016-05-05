@@ -3,11 +3,13 @@ package WindowsService;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 import org.json.simple.JSONObject;
 
 import Util.GlobalObjects;
+import WindowsService.HibernateUtil;
 
 import org.hyperic.sigar.Cpu;
 import org.hyperic.sigar.CpuInfo;
@@ -24,7 +26,9 @@ public class CpuData implements Runnable {
 	private static Sigar sigar = new Sigar();
 	private JSONObject lobjJsonCpuData = new JSONObject();
 	private boolean IsJsonObjectSent = false;
-	
+	Session session = HibernateUtil.getSessionFactory().openSession();
+  CpuHibernate cd = new CpuHibernate();
+  
 	/**
 	 * Constructor of the class Spawns a thread which fetches data from the user
 	 * system.
@@ -45,8 +49,8 @@ public class CpuData implements Runnable {
 	private void getDataFromCpu() {
 		LOGGER.info("Inside getDataFromCpu");
 		Cpu[] lobjCpuList = null;
-		
 		try {
+		  session.beginTransaction();
 			String lstrRetrievedValues = "";
 			lobjCpuList = sigar.getCpuList();
 			double ldblUptime = sigar.getUptime().getUptime();
@@ -59,8 +63,9 @@ public class CpuData implements Runnable {
 				while (count < lintArrLength) {
 					lstrRetrievedValues = "" + lobjCpuList[count].getIdle();
 					lobjJsonCpuData.put("CpuData_IdleTime", lstrRetrievedValues);
+					cd.set_cpu_idle(lstrRetrievedValues);
 					LOGGER.info("Total system cpu idle time : " + lstrRetrievedValues);
-					
+				
 					lstrRetrievedValues = "" + lobjCpuList[count].getIrq();
 					lobjJsonCpuData.put("CpuData_TimeServicingInterupts",
 					    lstrRetrievedValues);
@@ -68,6 +73,7 @@ public class CpuData implements Runnable {
 					    + lstrRetrievedValues);
 					
 					lstrRetrievedValues = "" + lobjCpuList[count].getNice();
+					cd.set_cpu_nice(lstrRetrievedValues);
 					lobjJsonCpuData.put("CpuData_NiceTime", lstrRetrievedValues);
 					LOGGER.info(
 					    "Total system cpu nice time : " + lobjCpuList[count].getNice());
@@ -81,25 +87,32 @@ public class CpuData implements Runnable {
 					lstrRetrievedValues = "" + lobjCpuList[count].getStolen();
 					lobjJsonCpuData.put("CpuData_InvoluntaryWaitTime",
 					    lstrRetrievedValues);
+					cd.set_cpu_inv_wait(lstrRetrievedValues);
 					LOGGER.info("Total system cpu involuntary wait time : "
 					    + lstrRetrievedValues);
 					
 					lstrRetrievedValues = "" + lobjCpuList[count].getSys();
 					lobjJsonCpuData.put("CpuData_CpuKernelTime", lstrRetrievedValues);
+					cd.set_cpu_kernel_time(lstrRetrievedValues);
 					LOGGER.info("Total system cpu kernel time : " + lstrRetrievedValues);
 					
 					lstrRetrievedValues = "" + lobjCpuList[count].getTotal();
 					lobjJsonCpuData.put("CpuData_SystemCpuTime", lstrRetrievedValues);
+					cd.set_cpu_time(lstrRetrievedValues);
 					LOGGER.info("Total system cpu time : " + lstrRetrievedValues);
 					
 					lstrRetrievedValues = "" + lobjCpuList[count].getUser();
 					lobjJsonCpuData.put("CpuData_CpuUserTime", lstrRetrievedValues);
 					LOGGER.info("Total system cpu user time : " + lstrRetrievedValues);
+					cd.set_cpu_utime(lstrRetrievedValues);
 					
 					lstrRetrievedValues = "" + lobjCpuList[count].getWait();
 					lobjJsonCpuData.put("CpuData_CpuIOWaitTime", lstrRetrievedValues);
+					cd.set_cpu_wtime(lstrRetrievedValues);
 					LOGGER.info("Total system cpu io wait time : " + lstrRetrievedValues);
 					count++;
+				  session.save(cd);
+		      session.getTransaction().commit();
 				}
 			}
 		} catch (SigarException sigarEx) {
@@ -117,6 +130,7 @@ public class CpuData implements Runnable {
 		LOGGER.info("Inside getDataFromCpuInfo");
 		
 		try {
+		  session.beginTransaction();
 			CpuInfo[] lcpuInfoInstance = sigar.getCpuInfoList();
 			int count = 0;
 			String lstrRetrievedValues = "";
@@ -125,33 +139,41 @@ public class CpuData implements Runnable {
 				while (count < lintArrLength) {
 					lstrRetrievedValues = "" + lcpuInfoInstance[count].getCacheSize();
 					lobjJsonCpuData.put("CpuData_CacheSize", lstrRetrievedValues);
-					LOGGER.info("CPU cache size : " + lstrRetrievedValues);
 					
+					LOGGER.info("CPU cache size : " + lstrRetrievedValues);
+					cd.set_cpu_cache(lstrRetrievedValues);
 					lstrRetrievedValues = ""
 					    + lcpuInfoInstance[count].getCoresPerSocket();
 					lobjJsonCpuData.put("CpuData_CoresPerSocket", lstrRetrievedValues);
+					cd.set_cpu_core_socket(lstrRetrievedValues);
 					LOGGER.info(
 					    "Number of CPU cores per CPU socket : " + lstrRetrievedValues);
 					
 					lstrRetrievedValues = "" + lcpuInfoInstance[count].getMhz();
 					lobjJsonCpuData.put("CpuData_CpuSpeed", lstrRetrievedValues);
 					LOGGER.info("CPU speed : " + lstrRetrievedValues);
+					cd.set_cpu_speed(lstrRetrievedValues);
 					
 					lstrRetrievedValues = "" + lcpuInfoInstance[count].getModel();
 					lobjJsonCpuData.put("CpuData_CpuModel", lstrRetrievedValues);
 					LOGGER.info("CPU model : " + lstrRetrievedValues);
+					cd.set_cpu_model(lstrRetrievedValues);
 					
 					lstrRetrievedValues = "" + lcpuInfoInstance[count].getTotalCores();
 					lobjJsonCpuData.put("CpuData_LogicalCores", lstrRetrievedValues);
 					LOGGER.info("Total CPU cores (logical) : " + lstrRetrievedValues);
+					cd.set_cpu_cores(lstrRetrievedValues);
 					
 					lstrRetrievedValues = "" + lcpuInfoInstance[count].getTotalSockets();
 					lobjJsonCpuData.put("CpuData_PhysicalSockets", lstrRetrievedValues);
 					LOGGER.info("Total CPU sockets (physical) : " + lstrRetrievedValues);
-					
+					cd.set_cpu_sockets(lstrRetrievedValues);
 					lstrRetrievedValues = "" + lcpuInfoInstance[count].getVendor();
 					lobjJsonCpuData.put("CpuData_Vendor", lstrRetrievedValues);
 					LOGGER.info("CPU vendor id : " + lstrRetrievedValues);
+					cd.set_cpu_vendor(lstrRetrievedValues);
+					session.save(cd);
+          session.getTransaction().commit();
 				}
 			}
 		} catch (Exception ex) {
