@@ -2,13 +2,14 @@
 <!--
     This page displays information about the CPU
 -->
+<!--Author Sourav Bhowmik-->
 <html>
 <head>
     <title>CPU Info</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
-    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="assets/css/main1.css" />
     <!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
     <script src="amcharts/amcharts.js" type="text/javascript"></script>
     <script src="amcharts/serial.js" type="text/javascript"></script>
@@ -109,43 +110,11 @@
                         </section>
 
                         <!-- Highlights -->
-                        <section>
-                            <ul class="divided">
-                                <li>
-
-                                    <!-- Highlight -->
-                                    <article class="box highlight">
-                                        <header>
-                                            <h3><a href="#">Something of note</a></h3>
-                                        </header>
-                                        <a href="#" class="image left"><img src="images/pic06.jpg" alt="" /></a>
-
-                                        <ul class="actions">
-                                            <li><a href="#" class="button icon fa-file">Learn More</a></li>
-                                        </ul>
-                                    </article>
-
-                                </li>
-                                <li>
-
-                                    <!-- Highlight -->
-                                    <article class="box highlight">
-                                        <header>
-                                            <h3><a href="#">Something of less note</a></h3>
-                                        </header>
-                                        <a href="#" class="image left"><img src="images/pic07.jpg" alt="" /></a>
-                                        <ul class="actions">
-                                            <li><a href="#" class="button icon fa-file">Learn More</a></li>
-                                        </ul>
-                                    </article>
-
-                                </li>
-                            </ul>
-                        </section>
+                       
 
                     </div>
 
-                    [0
+                    
                     <!-- Content -->
 
 
@@ -252,7 +221,7 @@
             "dataProvider": chartData,
             "valueAxes": [{
                 "position": "left",
-                "title": "Unique visitors"
+                "title": "CPU utilization in %age"
             }],
             "graphs": [{
                 "id": "g1",
@@ -304,13 +273,13 @@
             // current date
             var firstDate = new Date();
             // now set 500 minutes back
-            firstDate.setMinutes(firstDate.getDate() - 1000);
+          //  firstDate.setMinutes(firstDate.getDate() -1000);
 
             // and generate 500 data items
-            for (var i = 0; i < 500; i++) {
+            for (var i = 50; i >0; i--) {
                 var newDate = new Date(firstDate);
                 // each time we add one minute
-                newDate.setMinutes(newDate.getMinutes() + i);
+                newDate.setMinutes(newDate.getMinutes() - i);
                 // some random number
                 var visits = Math.round(Math.random() * 40 + 10 + i + Math.random() * i / 5);
                 // add data item to the array
